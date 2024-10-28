@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produtos</title>
+    
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap">
+    
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f9f9f9;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        form {
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            opacity: 0;
+            transform: translateY(-20px);
+            animation: formFadeIn 1.5s forwards;
+        }
+
+        input[type="text"], 
+        input[type="number"] {
+            font-family: 'Inter', sans-serif;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"] {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        input:focus {
+            border-color: #000;
+            outline: none;
+        }
+
+
+        button {
+            font-family: 'Inter', sans-serif;
+            padding: 10px;
+            background-color: #000000;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s;
+        }
+
+        button:hover {
+            background-color: #58615a;
+        }
+
+        button:active {
+            animation: bounce 0.3s;
+        }
+
+     
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        ul li:hover {
+            transform: translateY(-3px);
+        }
+
+        ul li img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            h1, h2 {
+                font-size: 24px;
+            }
+
+            input, button {
+                font-size: 14px;
+            }
+
+            ul li img {
+                width: 75px;
+                height: 75px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes formFadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Cadastro de Produtos</h1>
+    
+    <form id="produtoForm" enctype="multipart/form-data">
+        <input type="text" id="descricao" name="descricao" placeholder="Descrição" required>
+        <input type="text" id="marca" name="marca" placeholder="Marca" required>
+        <input type="number" id="valor" name="valor" placeholder="Valor" step="0.01" required>
+        <input type="number" id="quantidade" name="quantidade" placeholder="Quantidade" required>
+        <input type="file" id="imagem" name="imagem">
+        <button type="submit">Salvar</button>
+    </form>
+    
+    <h2>Produtos Cadastrados</h2>
+    <ul id="listaProdutos"></ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('produtoForm');
+            const listaProdutos = document.getElementById('listaProdutos');
+            let produtoEmEdicao = null;
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+
+                try {
+                    let url = 'http://localhost:3001/api/produtos';
+                    let method = 'POST';
+
+                    if (produtoEmEdicao) {
+                        url += `/${produtoEmEdicao}`;
+                        method = 'PUT';
+                    }
+
+                    const response = await fetch(url, {
+                        method: method,
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log('Produto salvo com sucesso:', data);
+                        form.reset();
+                        produtoEmEdicao = null;
+                        atualizarListaProdutos();
+                    } else {
+                        const errorData = await response.json();
+                        console.error('Erro ao salvar produto:', errorData);
+                    }
+                } catch (error) {
+                    console.error('Erro na requisição:', error);
+                }
+            });
+
+            async function atualizarListaProdutos() {
+                try {
+                    const response = await fetch('http://localhost:3001/api/produtos');
+                    const produtos = await response.json();
+
+                    listaProdutos.innerHTML = '';
+                    produtos.forEach(produto => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            ${produto.descricao} - ${produto.marca} - R$ ${produto.valor.toFixed(2)} - Qtd: ${produto.quantidade}
+                            <button class="editar" data-id="${produto.id}">Editar</button>
+                            <button class="excluir" data-id="${produto.id}">Excluir</button>
+                        `;
+                        if (produto.imagem) {
+                            const img = document.createElement('img');
+                            img.src = `http://localhost:3001/${produto.imagem}`;
+                            img.alt = produto.descricao;
+                            li.appendChild(img);
+                        }
+                        listaProdutos.appendChild(li);
+                    });
+
+                    document.querySelectorAll('.editar').forEach(button => {
+                        button.addEventListener('click', editarProduto);
+                    });
+                    document.querySelectorAll('.excluir').forEach(button => {
+                        button.addEventListener('click', excluirProduto);
+                    });
+                } catch (error) {
+                    console.error('Erro ao atualizar lista de produtos:', error);
+                }
+            }
+
+            async function editarProduto(e) {
+                const id = e.target.dataset.id;
+                try {
+                    const response = await fetch(`http://localhost:3001/api/produtos/${id}`);
+                    const produto = await response.json();
+
+    
+                    document.getElementById('descricao').value = produto.descricao;
+                    document.getElementById('marca').value = produto.marca;
+                    document.getElementById('valor').value = produto.valor;
+                    document.getElementById('quantidade').value = produto.quantidade;
+
+                    produtoEmEdicao = id;
+                } catch (error) {
+                    console.error('Erro ao carregar produto para edição:', error);
+                }
+            }
+
+            async function excluirProduto(e) {
+                const id = e.target.dataset.id;
+                if (confirm('Tem certeza que deseja excluir este produto?')) {
+                    try {
+                        const response = await fetch(`http://localhost:3001/api/produtos/${id}`, {
+                            method: 'DELETE'
+                        });
+
+                        if (response.ok) {
+                            console.log('Produto excluído com sucesso');
+                            atualizarListaProdutos();
+                        } else {
+                            console.error('Erro ao excluir produto');
+                        }
+                    } catch (error) {
+                        console.error('Erro na requisição de exclusão:', error);
+                    }
+                }
+            }
+
+            atualizarListaProdutos();
+        });
+    </script>
+</body>
+</html>

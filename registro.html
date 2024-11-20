@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    
+    <!-- Link para o CSS -->
+    <link rel="stylesheet" type="text/css" href="style/login.css"> <!-- Referência ao seu CSS -->
+
+    <!-- Links para fontes externas -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+    <!-- Container do Formulário de Cadastro -->
+    <div class="auth-container">
+        <div id="cadastroForm" class="auth-form">
+            <h1>Cadastro</h1>
+            <form action="/cadastro" method="POST">
+                <input type="text" id="nome" name="nome" placeholder="Nome Completo" required>
+                <input type="email" id="emailCadastro" name="email" placeholder="Email" required>
+                <input type="password" id="senhaCadastro" name="senha" placeholder="Senha" required>
+                <input type="password" id="confirmarSenha" name="confirmarSenha" placeholder="Confirmar Senha" required>
+                <button type="submit">Cadastrar</button>
+            </form>
+            <div class="switch">
+                <p>Já tem uma conta? <a href="login.html">Faça login aqui</a></p>
+            </
